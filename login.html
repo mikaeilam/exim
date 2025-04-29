@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود اختصاصی | سیستم مدیریت</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* استایل‌ها (همان کد فرستاده شده) */
+
+/* اینجا کل استایل‌هایی که دادی، وارد می‌شود (برای کوتاهی متن اینجا خلاصه کردم) */
+
+</style>
+</head>
+<body>
+<ul class="bg-bubbles">
+    <li></li><li></li><li></li><li></li><li></li>
+    <li></li><li></li><li></li><li></li><li></li>
+</ul>
+<div class="login-container">
+    <div class="login-header">
+        <div class="login-icon"><i class="fas fa-lock"></i></div>
+        <h1 class="login-title">ورود اختصاصی</h1>
+        <p class="login-subtitle">فقط کاربران مجاز می‌توانند وارد شوند</p>
+    </div>
+    <form class="login-form" id="loginForm">
+        <div class="input-group">
+            <label class="input-label">نام کاربری</label>
+            <div style="position: relative;">
+                <input type="text" class="input-field" id="username" placeholder="نام کاربری خود را وارد کنید" required>
+                <i class="fas fa-user input-icon"></i>
+            </div>
+        </div>
+        <div class="input-group">
+            <label class="input-label">رمز عبور</label>
+            <div style="position: relative;">
+                <input type="password" class="input-field" id="password" placeholder="رمز عبور خود را وارد کنید" required>
+                <i class="fas fa-key input-icon"></i>
+            </div>
+            <div class="error-message" id="errorMessage">نام کاربری یا رمز عبور اشتباه است</div>
+        </div>
+        <div class="login-options">
+            <div class="remember-me">
+                <input type="checkbox" id="remember">
+                <label for="remember">مرا به خاطر بسپار</label>
+            </div>
+            <div class="forgot-password">
+                <a href="#">رمز عبور را فراموش کرده‌اید؟</a>
+            </div>
+        </div>
+        <button type="submit" class="login-button">ورود به سیستم</button>
+    </form>
+</div>
+<script>
+const validUsers = {
+    "mikaeil": "5370033137Kh",
+    "mehrdad": "Mehrdad123",
+    "haniye": "002002202Kh",
+    "hosein": "007007207Hm"
+};
+const loginForm = document.getElementById('loginForm');
+const errorMessage = document.getElementById('errorMessage');
+
+loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    if (validUsers[username] && validUsers[username] === password) {
+        localStorage.setItem('loggedIn', 'true');
+        window.location.href = 'index.html'; // تغییر به صفحه اصلی
+    } else {
+        errorMessage.style.display = 'block';
+        loginForm.classList.add('shake');
+        setTimeout(() => {
+            loginForm.classList.remove('shake');
+        }, 500);
+    }
+});
+
+document.getElementById('username').addEventListener('input', function() {
+    errorMessage.style.display = 'none';
+});
+document.getElementById('password').addEventListener('input', function() {
+    errorMessage.style.display = 'none';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اکسیم ترخیص خلیج فارس</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<script>if (localStorage.getItem("loggedIn") !== "true") { window.location.href = "login.html"; }</script>
+    <div class="container">
+<div class="profile-header" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+    <div id="profile-info" style="background: var(--primary-color); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;">
+        خوش آمدید
+    </div>
+</div>
+
+        <div class="header">
+            <h1>اکسیم ترخیص خلیج فارس</h1>
+            <div class="header-info">
+                <span id="current-date">تاریخ: در حال بارگذاری...</span>
+                <span id="current-time">ساعت: در حال بارگذاری...</span>
+            </div>
+        </div>
+
+        <div id="entries-wrapper">
+            <table class="entries-table">
+                <thead>
+                    <tr>
+                        <th>ردیف اندیکاتور</th>
+                        <th>صاحب کالا</th>
+                        <th>مشتری</th>
+                        <th>وضعیت سند</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="entries-container">
+                    <!-- Entries will be added here dynamically -->
+                </tbody>
+            </table>
+            <div class="no-entries hidden" id="no-entries">
+                هیچ ردیفی یافت نشد
+            </div>
+        </div>
+
+        
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-wrap: wrap;">
+    <div>
+        <label for="rows-per-page" style="font-size: 0.9rem; margin-left: 5px;">تعداد نمایش در صفحه:</label>
+        <select id="rows-per-page" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+    <div class="pagination" id="pagination">
+    </div>
+</div>
+
+            <!-- Pagination buttons will be added here dynamically -->
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-btn search-btn" id="search-btn" title="جستجو">
+            <i class="fas fa-search"></i>
+        </button>
+        <button class="action-btn add-btn" id="add-btn" title="افزودن">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="action-btn indicator-btn" id="indicator-btn" title="اندیکاتور">
+            <i class="fas fa-book"></i>
+        </button>
+        <button class="action-btn theme-btn" id="theme-btn" title="تغییر تم">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button class="action-btn logout-btn" id="logout-btn" title="خروج">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">جستجوی اسناد</h2>
+                <span class="close-btn" id="close-search">&times;</span>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="search-input" placeholder="عبارت جستجو...">
+            </div>
+            <div id="search-results">
+                <!-- Search results will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Entry Modal -->
+    <div class="modal" id="entry-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">ردیف جدید</h2>
+                <span class="close-btn" id="close-modal">&times;</span>
+            </div>
+            <form id="entry-form">
+                <input type="hidden" id="entry-id">
+                
+                <div class="form-group">
+                    <label for="indicator">ردیف اندیکاتور</label>
+                    <input type="text" class="form-control" id="indicator" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="owner">صاحب کالا</label>
+                    <select class="form-control" id="owner" required>
+                        <option value="">انتخاب کنید</option>
+                        <option value="روان گستر تات">روان گستر تات</option>
+                        <option value="اکسیر پالایش آندیا">اکسیر پالایش آندیا</option>
+                        <option value="بهین روغن ماشین ساپرا">بهین روغن ماشین ساپرا</option>
+                        <option value="روغن موتور شتاب">روغن موتور شتاب</option>
+                        <option value="روغن موتور قم">روغن موتور قم</option>
+                        <option value="new">تعریف جدید...</option>
+                    </select>
+                    <input type="text" class="form-control" id="new-owner" style="display: none; margin-top: 5px;" placeholder="نام صاحب کالای جدید">
+                </div>
+                
+                <div class="form-group">
+                    <label for="client">مشتری</label>
+                    <select class="form-control" id="client" required>
+                        <option value="">انتخاب کنید</option>
+                        <option value="خضری">خضری</option>
+                        <option value="نصرتی">نصرتی</option>
+                        <option value="منان">منان</option>
+                        <option value="موسوی">موسوی</option>
+                        <option value="یعقوب زاده">یعقوب زاده</option>
+                        <option value="روبینا">روبینا</option>
+                        <option value="سینا آریا">سینا آریا</option>
+                        <option value="راجانی">راجانی</option>
+                        <option value="متولیان">متولیان</option>
+                        <option value="عبداللهی">عبداللهی</option>
+                        <option value="دارابی">دارابی</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="shipping">کشتیرانی</label>
+                    <select class="form-control" id="shipping">
+                        <option value="">انتخاب کنید</option>
+                        <option value="ستاره اقیانوس بدیع">ستاره اقیانوس بدیع</option>
+                        <option value="توشه بر">توشه بر</option>
+                        <option value="ساحل بیکران آریا">ساحل بیکران آریا</option>
+                        <option value="خدمات ساحلی تیام دریا">خدمات ساحلی تیام دریا</option>
+                        <option value="توسعه و تجارت روبینا">توسعه و تجارت روبینا</option>
+                        <option value="سام دریا آسیا">سام دریا آسیا</option>
+                        <option value="هماهنگ دریای پارس">هماهنگ دریای پارس</option>
+                        <option value="دریا پیمای امین پارس">دریا پیمای امین پارس</option>
+                        <option value="راهیان دریای سعادت">راهیان دریای سعادت</option>
+                        <option value="ناوبان دریای لیان">ناوبان دریای لیان</option>
+                        <option value="کشتی و کالا">کشتی و کالا</option>
+                        <option value="پردیس اقیانوی سیراف">پردیس اقیانوی سیراف</option>
+                        <option value="کیان دریا آریا">کیان دریا آریا</option>
+                        <option value="مدیریت بار و دریا">مدیریت بار و دریا</option>
+                        <option value="فانوس طلایی جزیره">فانوس طلایی جزیره</option>
+                        <option value="بر و بحر ایران">بر و بحر ایران</option>
+                        <option value="فرشته اقیانوس آبی">فرشته اقیانوس آبی</option>
+                        <option value="هوپاد دریا">هوپاد دریا</option>
+                        <option value="آبدیس مارین">آبدیس مارین</option>
+                        <option value="فرتاک دریای آرام">فرتاک دریای آرام</option>
+                        <option value="راشا تجارت شایگان">راشا تجارت شایگان</option>
+                        <option value="لوتوس دریا بندر">لوتوس دریا بندر</option>
+                        <option value="فرین ساحل اروند">فرین ساحل اروند</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="booking">شماره بوکینگ</label>
+                    <input type="text" class="form-control" id="booking">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargo-type">نوع کالا</label>
+                    <select class="form-control" id="cargo-type">
+                        <option value="">انتخاب کنید</option>
+                        <option value="روغن پایه تصفیه اول">روغن پایه تصفیه اول</option>
+                        <option value="روغن پایه تصفیه دوم">روغن پایه تصفیه دوم</option>
+                        <option value="روغن صنعتی">روغن صنعتی</option>
+                        <option value="گریس پایه کلسیم">گریس پایه کلسیم</option>
+                        <option value="فلکسی تانک به همراه متعلقات">فلکسی تانک به همراه متعلقات</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargo-count">تعداد کالا</label>
+                    <input type="number" class="form-control" id="cargo-count" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargo-weight">وزن کالا (کیلوگرم)</label>
+                    <input type="number" class="form-control" id="cargo-weight" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="packaging">نوع بسته بندی</label>
+                    <select class="form-control" id="packaging">
+                        <option value="">انتخاب کنید</option>
+                        <option value="فلکسی تانک">فلکسی تانک</option>
+                        <option value="بشکه">بشکه</option>
+                        <option value="ایزوتانک">ایزوتانک</option>
+                        <option value="IBC">IBC</option>
+                        <option value="فله">فله</option>
+                        <option value="نگله">نگله</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="container-count">تعداد کانتینر</label>
+                    <input type="number" class="form-control" id="container-count" min="1" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="container-type">نوع کانتینر</label>
+                    <select class="form-control" id="container-type">
+                        <option value="">انتخاب کنید</option>
+                        <option value="20فوت">20فوت</option>
+                        <option value="40فوت">40فوت</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cottage">شماره کوتاژ</label>
+                    <input type="text" class="form-control" id="cottage">
+                </div>
+                
+                <div class="form-group">
+                    <label for="warehouse">شماره قبض انبار</label>
+                    <input type="text" class="form-control" id="warehouse">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">مقصد کالا</label>
+                    <input type="text" class="form-control" id="destination">
+                </div>
+                
+                <div class="form-group">
+                    <label for="pdf-file">پیوست PDF</label>
+                    <input type="file" class="form-control" id="pdf-file" accept=".pdf">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">ذخیره</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">جزئیات سند</h2>
+                <span class="close-btn" id="close-details">&times;</span>
+            </div>
+            <div id="details-content">
+                <!-- Details will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicator Modal -->
+    <div class="modal" id="indicator-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">اسناد اندیکاتور</h2>
+                <span class="close-btn" id="close-indicator">&times;</span>
+            </div>
+            <div id="indicator-content">
+                <!-- Indicator entries will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-message"></span>
+    </div>
+
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
